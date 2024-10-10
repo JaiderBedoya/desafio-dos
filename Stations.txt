@@ -1,0 +1,3 @@
+Medellin:A12:Jose Jaramillo:Sur:405°N503°E:12:10
+Amazonas:B05:Jaider Carmina:Norte:506°N707°O:3:1
+Choco:X10:Alexander Osorio:Norte:777°N777°E:12:12
