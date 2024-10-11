@@ -56,4 +56,67 @@ Station leerDatosEstacion(const string datosEstacion){
 }
 
 
+void llenarArregloEstaciones(Station* arregloEstaciones, const string& nomArchivo){
+    
+    ifstream file(nomArchivo);
+    if (!file.is_open()) {
+        cerr << "Error abriendo archivo: " << nomArchivo << endl;
+        return ;
+    }
+    unsigned short int posicionArregloEstaciones = 0;
+    
+    string linea;
+    
+    while (getline(file, linea)) { 
+        arregloEstaciones[posicionArregloEstaciones] = leerDatosEstacion(linea);
+        posicionArregloEstaciones++;
+    }
+    
+    file.close();
+    //std::cout<<"Informacion de estaciones recopilada satisfactoriamente..."<<endl<<endl;
+}
 
+Surtidor leerDatosSurtidor(const string datosSurtidor){
+    string modeloSurtidor, codigoSurtidor, estacionPerteneciente, estadoSurtidor;
+
+    string datos[4] = {codigoSurtidor, modeloSurtidor, estacionPerteneciente, estadoSurtidor};
+    
+    unsigned short int contadorPalabras = 0;
+    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosSurtidor, ':')+1);
+    
+    
+    for(char caracter : datosSurtidor){
+        if(caracter == ':'){
+            contadorPalabras++;
+            continue;
+        }
+        datos[contadorPalabras] += caracter;
+    }
+    Surtidor nuevoSurtidor(datos[0], datos[1], datos[2], true);
+    if(datos[3] == "0"){
+        Surtidor surtidorEnFalso(datos[0], datos[1], datos[2], false); 
+        nuevoSurtidor = surtidorEnFalso;
+    }
+    
+    return nuevoSurtidor;
+}
+
+void llenarArregloSurtidores(Surtidor* arregloSurtidores, const string& nomArchivo){
+    
+    ifstream file(nomArchivo);
+    if (!file.is_open()) {
+        cerr << "Error abriendo archivo: " << nomArchivo << endl;
+        return ;
+    }
+    unsigned short int posicionArregloSurtidores = 0;
+    
+    string linea;
+    
+    while (getline(file, linea)) { 
+        arregloSurtidores[posicionArregloSurtidores] = leerDatosSurtidor(linea);
+        posicionArregloSurtidores++;
+    }
+    
+    file.close();
+    //std::cout<<"Informacion de surtidores recopilada satisfactoriamente..."<<endl<<endl;
+}
