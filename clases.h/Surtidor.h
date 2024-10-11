@@ -4,6 +4,11 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <ctime>
+#include <sstream>
+#include <iomanip> 
+class Surtidor;
+#include "FuncionesAnexas.h"
 using namespace std;
 
 class Surtidor {
@@ -28,7 +33,7 @@ class Surtidor {
         void setEstacionPerteneciente(string nuevaEstacionPerteneciente);
         void setEstado(bool nuevoEstado);
         
-        void reportarVenta(string tipoCombustible,unsigned short int cantidadCombustibleVendida, unsigned short int costoCombustibleTotal);
-        void venderCombustible(string tipoCombustible, unsigned short int cantidadRequerida, unsigned short int cantidadDisponible);
+        void reportarVenta(string& tipoCombustible,unsigned short int cantidadCombustibleVendida, string& metodoPago, unsigned int numeroDocumento, unsigned short int dineroEnCop,string& codigoSurtidor);
+    
 };
 #endif
