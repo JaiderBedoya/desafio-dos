@@ -61,11 +61,64 @@ void Station::setSurtidoresActivos(unsigned short int numeroSurtidoresActivos){
     numeroSurtidoresActivos = numeroSurtidoresActivos;
 }
 
-void asignarLitrosAlTanque(unsigned short int* tanque, unsigned short int tamanio = 3){
-    random_device rd; 
-    mt19937 gen(rd()); 
-    uniform_int_distribution<> distribucion(100, 200); 
+void Station::asignarLitrosAlTanque(unsigned short int* tanque, unsigned short int tamanio){
     for(unsigned short int i = 0; i < tamanio; i++){
-        tanque[i] = distribucion(gen);
+        unsigned short int numeroRandom = numeroAletatorio(100, 200);
+        tanque[i] = numeroRandom;
     }
+}
+
+void Station::imprimirDatosHistorico(string& fecha, string& tipoCombustible, string& cantidadCombustible, string& metodoPago, string& numeroDocumento, string& dineroEnCop, string& codigoDelSurtidor){
+    std::cout<<endl<<"Fecha: "<<fecha<<endl;
+    std::cout<<"Tipo de combustible vendido: "<<tipoCombustible<<endl;
+    std::cout<<"Cantidad de combustible vendida: "<<cantidadCombustible<<endl;
+    std::cout<<"Metodo de Pago: "<<metodoPago<<endl;
+    std::cout<<"Numero de documento del cliente: "<<numeroDocumento<<endl;
+    std::cout<<"Dinero cobrado por el servicio: "<<dineroEnCop<<endl;
+    std::cout<<"Codigo del surtidor: "<<codigoDelSurtidor<<endl<<endl;
+}
+
+void Station::consultarHistoricoSurtidor(string& codigoSurtidor){
+    
+    string nomArchivo = "VentasSurtidores.txt";
+    
+    ifstream file(nomArchivo);
+    if (!file.is_open()) {
+        cerr << "Error abriendo archivo: " << nomArchivo << endl;
+        return;
+    }
+    
+    string linea;
+    while (getline(file, linea)) { 
+        if (linea.find(codigoSurtidor) != string::npos) {
+            
+            string fecha, tipoCombustible, cantidadCombustible, metodoPago, numeroDocumento,dineroEnCop, codigoDelSurtidor;
+            string arregloDatosVenta[7] = {fecha, tipoCombustible, cantidadCombustible, metodoPago, numeroDocumento,dineroEnCop, codigoDelSurtidor};
+            unsigned short int posicionArregloDatos = 0;
+            
+                for(char caracter : linea){
+                    if(posicionArregloDatos == 7){
+                        break;
+                    }
+                if(caracter == '|'){
+                    posicionArregloDatos++;
+                    continue;
+                }
+                else{
+                arregloDatosVenta[posicionArregloDatos] += caracter;
+                }
+            }
+            fecha = arregloDatosVenta[0];
+            tipoCombustible = arregloDatosVenta[1];
+            cantidadCombustible = arregloDatosVenta[2];
+            metodoPago = arregloDatosVenta[3];
+            numeroDocumento = arregloDatosVenta[4];
+            dineroEnCop = arregloDatosVenta[5];
+            codigoDelSurtidor = arregloDatosVenta[6];
+            
+            imprimirDatosHistorico(fecha, tipoCombustible, cantidadCombustible, metodoPago, numeroDocumento, dineroEnCop, codigoDelSurtidor);
+            
+        }
+    }
+    file.close();
 }
