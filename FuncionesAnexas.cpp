@@ -38,11 +38,11 @@ Station leerDatosEstacion(const string datosEstacion){
     unsigned short int tanqueCombustibles[3];
     
     unsigned short int contadorPalabras = 0;
-    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosEstacion, '|')+1);
+    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosEstacion, ':')+1);
     
     
     for(char caracter : datosEstacion){
-        if(caracter == '|'){
+        if(caracter == ':'){
             contadorPalabras++;
             continue;
         }
@@ -82,11 +82,11 @@ Surtidor leerDatosSurtidor(const string datosSurtidor){
     string datos[4] = {codigoSurtidor, modeloSurtidor, estacionPerteneciente, estadoSurtidor};
     
     unsigned short int contadorPalabras = 0;
-    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosSurtidor, '|')+1);
+    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosSurtidor, ':')+1);
     
     
     for(char caracter : datosSurtidor){
-        if(caracter == '|'){
+        if(caracter == ':'){
             contadorPalabras++;
             continue;
         }
@@ -118,6 +118,50 @@ void llenarArregloSurtidores(Surtidor* arregloSurtidores, const string& nomArchi
     }
     
     file.close();
+    //std::cout<<"Informacion de surtidores recopilada satisfactoriamente..."<<endl<<endl;
+}
+
+bool esValidoFormatoGerente(const string& gerente) {
+    bool espacioEncontrado = false;
+    bool letraEncontrada = false;
+
+    for (char c : gerente) {
+        if (isspace(c)) {
+            espacioEncontrado = true; 
+        } else if (!isalpha(c)) {
+            return false;
+        }else if(isalpha(c)){
+            letraEncontrada = true;
+        }else{
+            return false;
+        }
+    }
+    return espacioEncontrado && letraEncontrada;
+    
+}
+
+bool esValidoFormatoUbicacion(const string& ubicacion) {
+    if (ubicacion.length() != 10) return false;
+
+    for (int i = 0; i < 3; ++i) {
+        if (!isdigit(ubicacion[i])) return false;  
+    }
+
+    if (ubicacion.substr(3, 1) != "°") return false;  
+
+    char direccion1 = ubicacion[4];
+    if (direccion1 != 'N' && direccion1 != 'S' && direccion1 != 'E' && direccion1 != 'W') return false;
+
+    for (int i = 5; i < 8; ++i) {
+        if (!isdigit(ubicacion[i])) return false;  
+    }
+
+    if (ubicacion.substr(8, 1) != "°") return false;  
+
+    char direccion2 = ubicacion[9];
+    if (direccion2 != 'N' && direccion2 != 'S' && direccion2 != 'E' && direccion2 != 'W') return false;
+
+    return true; 
 }
 
 string obtenerFechaActual(){
