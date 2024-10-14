@@ -96,16 +96,135 @@ void fijarPrecios(Red& redNacional){
         } 
         else {
             switch(opcion){
+                unsigned short int _precioNorteRegular;
+                unsigned short int _precioNortePremium;
+                unsigned short int _precioNorteEcoextra;
+                unsigned short int _precioCentroRegular;
+                unsigned short int _precioCentroPremium;
+                unsigned short int _precioCentroEcoextra;
+                unsigned short int _precioSurRegular;
+                unsigned short int _precioSurPremium;
+                unsigned short int _precioSurEcoextra;
+
                 case 1:
                 cout<<"\nmodificar region norte\n";
+                while(true){
+                    cout<<"precio de Regular\n>>>";
+                    cin>>_precioNorteRegular;
+                    
+                    if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioNorteRegular(_precioNorteRegular);
+                while(true){
+                    cout<<"precio de Premium\n>>>";
+                    cin>>_precioNortePremium;
+                    if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioNortePremium(_precioNortePremium);
+                while(true){
+                    cout<<"precio de Ecoextra\n>>>";
+                    cin>>_precioNorteEcoextra;
+                    if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioNorteEcoextra(_precioNorteEcoextra);
                 break;
                 
                 case 2:
                 cout<<"\nmodificar region centro\n";
+                while(true){
+                    cout<<"precio de Regular\n>>>";
+                    cin>>_precioCentroRegular;
+                        if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioCentroRegular(_precioCentroRegular);
+                while(true){
+                    cout<<"precio de Premium\n>>>";
+                    cin>>_precioCentroPremium;
+                        if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioCentroPremium(_precioCentroPremium);
+                while(true){
+                    cout<<"precio de Ecoextra\n>>>";
+                    cin>>_precioCentroEcoextra;
+                        if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioCentroEcoextra(_precioCentroEcoextra);
                 break;
                 
                 case 3:
                 cout<<"\n modificar region sur\n";
+                while(true){
+                    cout<<"precio de Regular\n>>>";
+                    cin>>_precioSurRegular;
+                        if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioSurRegular(_precioSurRegular);
+                while(true){
+                    cout<<"precio de Premium\n>>>";
+                    cin>>_precioSurPremium;
+                        if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioSurPremium(_precioSurPremium);
+                while(true){
+                    cout<<"precio de Ecoextra\n>>>";
+                    cin>>_precioSurEcoextra;
+                        if(cin.fail()){
+                        cin.clear();
+                        cin.ignore(1000,'\n');
+                        cout<<"\nX Formato invalido, intente de nuevo X\n";
+                    }else{
+                        break;
+                    }
+                }
+                redNacional.setPrecioSurEcoextra(_precioSurEcoextra);
                 break;
                 
                 case 4:
@@ -114,7 +233,17 @@ void fijarPrecios(Red& redNacional){
                 default:
                 break;
             }
-        
+        cout<<redNacional.getPrecioNorteRegular()<<endl;
+        cout<<redNacional.getPrecioNortePremium()<<endl;
+        cout<<redNacional.getPrecioNorteEcoextra()<<endl;
+        cout<<redNacional.getPrecioCentroRegular()<<endl;
+        cout<<redNacional.getPrecioCentroPremium()<<endl;
+        cout<<redNacional.getPrecioCentroEcoextra()<<endl;
+        cout<<redNacional.getPrecioSurRegular()<<endl;
+        cout<<redNacional.getPrecioSurPremium()<<endl;
+        cout<<redNacional.getPrecioSurEcoextra()<<endl;
+
+
         if(opcion == 4){
             break;
         }
@@ -140,7 +269,7 @@ void menuRed(Red& redNacional)
     
     if (cin.fail() || opcion < 1 || opcion > 5) {
             cin.clear(); 
-            std::cin.ignore(1000,'\n');
+            cin.ignore(1000,'\n');
             cout << "\n X Formato invalido, intente de nuevo X\n" << endl;
         } else {
             
@@ -306,4 +435,3 @@ void menu(Red& redNacional)
         
         }
 }
-
