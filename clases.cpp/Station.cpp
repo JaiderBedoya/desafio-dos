@@ -78,9 +78,9 @@ void Station::imprimirDatosHistorico(string& fecha, string& tipoCombustible, str
     std::cout<<"Codigo del surtidor: "<<codigoDelSurtidor<<endl<<endl;
 }
 
-void Station::consultarHistoricoSurtidor(string& codigoSurtidor){
+void Station::consultarHistoricoSurtidor(const string& codigoSurtidor){
     
-    string nomArchivo = "VentasSurtidores.txt";
+    const string nomArchivo = "VentasSurtidores.txt";
     
     ifstream file(nomArchivo);
     if (!file.is_open()) {
@@ -116,9 +116,51 @@ void Station::consultarHistoricoSurtidor(string& codigoSurtidor){
             dineroEnCop = arregloDatosVenta[5];
             codigoDelSurtidor = arregloDatosVenta[6];
             
-            imprimirDatosHistorico(fecha, tipoCombustible, cantidadCombustible, metodoPago, numeroDocumento, dineroEnCop, codigoDelSurtidor);
             
+            imprimirDatosHistorico(fecha, tipoCombustible, cantidadCombustible, metodoPago, numeroDocumento, dineroEnCop, codigoDelSurtidor);
         }
     }
     file.close();
+}
+
+void Station::agregarSurtidor(Surtidor*& arregloSurtidores, Surtidor& nuevoSurtidor, unsigned short int& tamanio){
+
+    Surtidor* arregloNuevo = new Surtidor[tamanio+1];
+    
+    for(unsigned short int i = 0; i < tamanio; i++){
+        arregloNuevo[i] = arregloSurtidores[i];
+    }
+    arregloNuevo[tamanio] = nuevoSurtidor;
+    
+    delete[] arregloSurtidores;
+    
+    arregloSurtidores = arregloNuevo;
+    tamanio++;
+    
+}
+
+
+void Station::eliminarSurtidor(Surtidor*& arregloSurtidores, unsigned short int idxSurtidorParaEliminar, unsigned short int& tamanio){
+    
+    if (idxSurtidorParaEliminar < 0 || idxSurtidorParaEliminar >= tamanio) {
+        std::cout <<"El indice del surtidor esta fuera del arreglo..."<<endl;
+        return;
+    }
+    Surtidor* nuevoArreglo = new Surtidor[tamanio - 1];
+    
+    for (unsigned short int i = 0, j = 0; i < tamanio; i++) {
+        if (i == idxSurtidorParaEliminar) {
+            continue;
+        }
+        else{
+        nuevoArreglo[j] = arregloSurtidores[i];
+        j++;
+        }
+    }
+    
+    delete[] arregloSurtidores;
+
+    arregloSurtidores = nuevoArreglo;
+    tamanio--;
+    
 }
