@@ -38,11 +38,11 @@ Station leerDatosEstacion(const string datosEstacion){
     unsigned short int tanqueCombustibles[3];
     
     unsigned short int contadorPalabras = 0;
-    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosEstacion, ':')+1);
+    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosEstacion, '|')+1);
     
     
     for(char caracter : datosEstacion){
-        if(caracter == ':'){
+        if(caracter == '|'){
             contadorPalabras++;
             continue;
         }
@@ -82,11 +82,11 @@ Surtidor leerDatosSurtidor(const string datosSurtidor){
     string datos[4] = {codigoSurtidor, modeloSurtidor, estacionPerteneciente, estadoSurtidor};
     
     unsigned short int contadorPalabras = 0;
-    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosSurtidor, ':')+1);
+    unsigned short int tamañoArregloDatos = (contarCaracteresEnString(datosSurtidor, '|')+1);
     
     
     for(char caracter : datosSurtidor){
-        if(caracter == ':'){
+        if(caracter == '|'){
             contadorPalabras++;
             continue;
         }
@@ -118,50 +118,6 @@ void llenarArregloSurtidores(Surtidor* arregloSurtidores, const string& nomArchi
     }
     
     file.close();
-    //std::cout<<"Informacion de surtidores recopilada satisfactoriamente..."<<endl<<endl;
-}
-
-bool esValidoFormatoGerente(const string& gerente) {
-    bool espacioEncontrado = false;
-    bool letraEncontrada = false;
-
-    for (char c : gerente) {
-        if (isspace(c)) {
-            espacioEncontrado = true; 
-        } else if (!isalpha(c)) {
-            return false;
-        }else if(isalpha(c)){
-            letraEncontrada = true;
-        }else{
-            return false;
-        }
-    }
-    return espacioEncontrado && letraEncontrada;
-    
-}
-
-bool esValidoFormatoUbicacion(const string& ubicacion) {
-    if (ubicacion.length() != 10) return false;
-
-    for (int i = 0; i < 3; ++i) {
-        if (!isdigit(ubicacion[i])) return false;  
-    }
-
-    if (ubicacion.substr(3, 1) != "°") return false;  
-
-    char direccion1 = ubicacion[4];
-    if (direccion1 != 'N' && direccion1 != 'S' && direccion1 != 'E' && direccion1 != 'W') return false;
-
-    for (int i = 5; i < 8; ++i) {
-        if (!isdigit(ubicacion[i])) return false;  
-    }
-
-    if (ubicacion.substr(8, 1) != "°") return false;  
-
-    char direccion2 = ubicacion[9];
-    if (direccion2 != 'N' && direccion2 != 'S' && direccion2 != 'E' && direccion2 != 'W') return false;
-
-    return true; 
 }
 
 string obtenerFechaActual(){
@@ -208,4 +164,104 @@ unsigned short int numeroAletatorio(unsigned short int minimo, unsigned short in
     
     return distribucion(gen);
     
+}
+
+void escribirDatosSurtidoresEnArchivo(Surtidor* arregloSurtidores, unsigned short int tamanioArreglo){
+    
+    string nombreArchivo = "Surtidores.txt";
+
+    std::ofstream archivoSurtidores(nombreArchivo, std::ios::out);
+
+    if (!archivoSurtidores) {
+        std::cerr << "Error al abrir el archivo." << std::endl;
+        return ;
+    }
+    
+    for(unsigned short int i = 0; i < tamanioArreglo; i++){
+        Surtidor surtidorEnArreglo = arregloSurtidores[i];
+        string informacionSurtidor = surtidorEnArreglo.getCodigo()+"|"+surtidorEnArreglo.getModelo()+"|"+surtidorEnArreglo.getEstacionPerteneciente()+"|"+to_string(surtidorEnArreglo.getEstado());
+        archivoSurtidores << informacionSurtidor<< endl;
+    }
+    archivoSurtidores.close();
+    
+}
+
+
+void escribirDatosEstacionesEnArchivo(Station* arregloEstaciones, unsigned short int tamanioArreglo){
+    
+    string nombreArchivo = "Stations.txt";
+
+    std::ofstream archivoEstaciones(nombreArchivo, std::ios::out);
+
+    if (!archivoEstaciones) {
+        std::cerr << "Error al abrir el archivo." << std::endl;
+        return ;
+    }
+    
+    for(unsigned short int i = 0; i < tamanioArreglo; i++){
+        Station estacionEnArreglo = arregloEstaciones[i];
+        string informacionEstacion = estacionEnArreglo.getNombre()+"|"+estacionEnArreglo.getCodigo()+"|"+estacionEnArreglo.getGerente()+"|"+estacionEnArreglo.getRegion()+"|"+estacionEnArreglo.getUbicacion()+"|"+to_string(estacionEnArreglo.getNumeroSurtidores())+"|"+to_string(estacionEnArreglo.getSurtidoresActivos());
+        archivoEstaciones << informacionEstacion<< endl;
+    }
+    archivoEstaciones.close();
+    
+}
+
+unsigned short int obtenerIdxSurtidorEliminar(Surtidor* arregloSurtidores, string& codigoSurtidorAEliminar, unsigned short int tamanioArreglo){
+    for(unsigned short int i = 0; i < tamanioArreglo; i++){
+        if(arregloSurtidores[i].getCodigo() == codigoSurtidorAEliminar){
+            return i;
+        }
+    }
+    std::cout<<"No esta el surtidor en el arreglo..."<<endl;
+    return -1;
+}
+
+unsigned short int obtnerIdxEstacionEliminar(Station* arregloEstaciones, string& codigoEstacionAEliminar, unsigned short int tamanioArreglo){
+    for(unsigned short int i = 0; i < tamanioArreglo; i++){
+        if(arregloEstaciones[i].getCodigo() == codigoEstacionAEliminar){
+            return i;
+        }
+    }
+    std::cout<<"No esta la estacion en el arreglo..."<<endl;
+    return -1;
+}
+
+bool esValidoFormatoGerente(const string& gerente) {
+    bool espacioEncontrado = false;
+    bool letraEncontrada = false;
+
+    for (char c : gerente) {
+        if (isspace(c)) {
+            espacioEncontrado = true; 
+        } else if (!isalpha(c)) {
+            return false;
+        }else if(isalpha(c)){
+            letraEncontrada = true;
+        }else{
+            return false;
+        }
+    }
+    return espacioEncontrado && letraEncontrada;
+    
+}
+
+bool esValidoFormatoUbicacion(const string& ubicacion) {
+    if (ubicacion.length() != 10 ){
+        return false;
+    }else if (ubicacion[3] != 176 || ubicacion[4] != 'N' || ubicacion[4] != 'S' || ubicacion[4] != 'O' || ubicacion[4] != 'E' || ubicacion[9] != 'N' || ubicacion[9] != 'S' || ubicacion[9] != '0' || ubicacion[9] != 'E' || ubicacion[8] != 176){
+        return true;
+    }else{
+        return false;
+    }
+    
+}
+
+short int encontrarStringEnArreglo(string* arregloStrings, unsigned short int tamanioArreglo, string& stringAEncontrar){
+    for(unsigned short int i = 0; i < tamanioArreglo; i++){
+        if(arregloStrings[i] == stringAEncontrar){
+            return i;
+        }
+    }
+    return -1;
 }
