@@ -33,7 +33,19 @@ void Surtidor::setEstacionPerteneciente(string nuevaEstacionPerteneciente){
 void Surtidor::setEstado(bool nuevoEstado){
     estado = nuevoEstado;
 }
-void Surtidor::reportarVenta(string tipoCombustible,unsigned short int cantidadCombustibleVendida, unsigned short int costoCombustibleTotal){
+void Surtidor::reportarVenta(string& tipoCombustible,unsigned short int cantidadCombustibleVendida, string& metodoPago, unsigned int numeroDocumento, unsigned short int dineroEnCop, string& codigoSurtidor){
+    string nomArchivo = "VentasSurtidores.txt";
     
-}
+    ofstream file(nomArchivo, ios::out | ios::app);
+    if (!file.is_open()) {
+        cerr << "Error abriendo archivo: " << nomArchivo << endl;
+        return;
+    }
+    string fechaInstantanea = obtenerFechaActual();
+    string informacionVenta = fechaInstantanea+"|"+to_string(cantidadCombustibleVendida)+"|"+tipoCombustible+"|"+metodoPago+"|"+to_string(numeroDocumento)+"|"+to_string(dineroEnCop)+"|"+codigoSurtidor;
+    
+    file << informacionVenta << endl;
+    std::cout<<"Se reporto la venta..."<<endl;
 
+    file.close();
+}
