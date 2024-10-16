@@ -84,15 +84,16 @@ void Red::setPrecioSurEcoextra(unsigned short int _precioSurEcoextra){
     precioSurEcoextra = _precioSurEcoextra;
 }
 
-void Red::agregarEstacion(Station*& arregloEstaciones, Station& nuevaEstacion, unsigned short int& tamanio){
+void Red::agregarEstacion(Station*& arregloEstaciones, Station* nuevaEstacion, unsigned short int& tamanio){
 
     Station* arregloNuevo = new Station[tamanio+1];
+    
     
     for(unsigned short int i = 0; i < tamanio; i++){
         arregloNuevo[i] = arregloEstaciones[i];
     }
-    arregloNuevo[tamanio] = nuevaEstacion;
     
+    arregloNuevo[tamanio] = *nuevaEstacion;
     delete[] arregloEstaciones;
     
     arregloEstaciones = arregloNuevo;
@@ -123,3 +124,43 @@ void Red::eliminarEstacion(Station*& arregloEstaciones, unsigned short int idxEs
     arregloEstaciones = nuevoArreglo;
     tamanio--;
 }
+/*
+void calcularMontoVentasCategoriaCombustible(Surtidor* surtidoresEnArchivo, unsigned short int& tamanioArreglo){
+    const string nomArchivo = "VentasSurtidores.txt";
+    
+    ifstream file(nomArchivo);
+    if (!file.is_open()) {
+        cerr << "Error abriendo archivo: " << nomArchivo << endl;
+        return ;
+    }
+    string codigoSurtidores[tamanioArreglo];
+    
+    unsigned long int arregloVentasEstaciones[tamanioArreglo];
+    for(unsigned short int i= 0; i < tamanioArreglo; i++){
+        surtidoresEnArchivo[i] = surtidoresEnArchivo[i].getCodigo[];
+    }
+    
+    unsigned short int posicionArregloEstaciones = 0;
+    
+    string linea;
+    
+    while (getline(file, linea)) { 
+        string ventaCombustible;
+        unsigned short int contadorCaracterSaltar = 0;
+        for(char caracter : linea){
+            if(caracter == '|'){
+                contadorCaracterSaltar++;
+            }
+            if(contadorCaracterSaltar >= 5 && contadorCaracterSaltar <= 6){
+                ventaCombustible
+                
+            }
+        }
+        arregloEstaciones[posicionArregloEstaciones] = leerDatosEstacion(linea);
+        posicionArregloEstaciones++;
+    }
+    
+    file.close();
+    //std::cout<<"Informacion de estaciones recopilada satisfactoriamente..."<<endl<<endl;
+}
+*/ 
