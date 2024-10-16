@@ -61,8 +61,8 @@ void Station::setSurtidoresActivos(unsigned short int numeroSurtidoresActivos){
     numeroSurtidoresActivos = numeroSurtidoresActivos;
 }
 
-void Station::asignarLitrosAlTanque(unsigned short int* tanque, unsigned short int tamanio){
-    for(unsigned short int i = 0; i < tamanio; i++){
+void Station::asignarLitrosAlTanque(){
+    for(unsigned short int i = 0; i < 3; i++){
         unsigned short int numeroRandom = numeroAletatorio(100, 200);
         tanque[i] = numeroRandom;
     }
@@ -123,14 +123,14 @@ void Station::consultarHistoricoSurtidor(const string& codigoSurtidor){
     file.close();
 }
 
-void Station::agregarSurtidor(Surtidor*& arregloSurtidores, Surtidor& nuevoSurtidor, unsigned short int& tamanio){
+void Station::agregarSurtidor(Surtidor*& arregloSurtidores, Surtidor* nuevoSurtidor, unsigned short int& tamanio){
 
     Surtidor* arregloNuevo = new Surtidor[tamanio+1];
     
     for(unsigned short int i = 0; i < tamanio; i++){
         arregloNuevo[i] = arregloSurtidores[i];
     }
-    arregloNuevo[tamanio] = nuevoSurtidor;
+    arregloNuevo[tamanio] = *nuevoSurtidor;
     
     delete[] arregloSurtidores;
     
@@ -140,16 +140,17 @@ void Station::agregarSurtidor(Surtidor*& arregloSurtidores, Surtidor& nuevoSurti
 }
 
 
-void Station::eliminarSurtidor(Surtidor*& arregloSurtidores, unsigned short int idxSurtidorParaEliminar, unsigned short int& tamanio){
+
+void Station::eliminarSurtidor(Surtidor*& arregloSurtidores, unsigned short int* idxSurtidorParaEliminar, unsigned short int& tamanio){
     
-    if (idxSurtidorParaEliminar < 0 || idxSurtidorParaEliminar >= tamanio) {
+    if (*idxSurtidorParaEliminar < 0 || *idxSurtidorParaEliminar >= tamanio) {
         std::cout <<"El indice del surtidor esta fuera del arreglo..."<<endl;
         return;
     }
     Surtidor* nuevoArreglo = new Surtidor[tamanio - 1];
     
     for (unsigned short int i = 0, j = 0; i < tamanio; i++) {
-        if (i == idxSurtidorParaEliminar) {
+        if (i == *idxSurtidorParaEliminar) {
             continue;
         }
         else{
@@ -164,3 +165,67 @@ void Station::eliminarSurtidor(Surtidor*& arregloSurtidores, unsigned short int 
     tamanio--;
     
 }
+
+void Station::reportarCantidadLitrosVendidosCategoriaCombustible(){
+    
+    const string nomArchivo = "VentasSurtidores.txt";
+    
+    ifstream file(nomArchivo);
+    if (!file.is_open()) {
+        cerr << "Error abriendo archivo: " << nomArchivo << endl;
+        return ;
+    }
+
+    unsigned long int litrosVendidosRegular, litrosVendidosPremium, litrosVendidosEcoExtra;
+    string Regular = "Regular";
+    string Premium = "Premium";
+    string EcoExtra = "EcoExtra";
+    
+    string linea;
+    
+    unsigned short int contadorCaracterDeterminante = 0;
+    while (getline(file, linea)) { 
+        for(unsigned short int i = 0; i < linea.length(); i++){
+            string litrosVendidos;
+            if(linea[i] == '|'){
+                contadorCaracterDeterminante++;
+            }
+            if(contadorCaracterDeterminante == 1 && linea.find(Regular) != std::string::npos){
+                if(linea[i+2] == '|'){
+                    litrosVendidos += linea[i+1];
+                    litrosVendidosRegular += stoi(litrosVendidos);
+                }else{
+                    litrosVendidos = linea[i+1]+linea[i+2];
+                    litrosVendidosRegular += stoi(litrosVendidos);
+                }
+            }
+            else if(contadorCaracterDeterminante == 1 && linea.find(Premium) != std::string::npos){
+                if(linea[i+2] == '|'){
+                    litrosVendidos += linea[i+1];
+                    litrosVendidosPremium += stoi(litrosVendidos);
+                }else{
+                    litrosVendidos = linea[i+1]+linea[i+2];
+                    litrosVendidosPremium += stoi(litrosVendidos);
+                }
+            }else if(contadorCaracterDeterminante == 1 && linea.find(EcoExtra) != std::string::npos){
+                if(linea[i+2] == '|'){
+                    litrosVendidos += linea[i+1];
+                    litrosVendidosEcoExtra += stoi(litrosVendidos);
+                }else{
+                    litrosVendidos = linea[i+1]+linea[i+2];
+                    litrosVendidosEcoExtra += stoi(litrosVendidos);
+                }
+            }
+        }
+       
+    }
+    
+    std::cout<<"Litros vendidos de combustible Regular: "<<litrosVendidosRegular<<endl;
+    std::cout<<"Litros vendidos de combustible Premium: "<<litrosVendidosPremium<<endl;
+    std::cout<<"Litros vendidos de combustible EcoExtra: "<<litrosVendidosEcoExtra<<endl;
+    
+    
+    file.close();
+    //std::cout<<"Informacion de estaciones recopilada satisfactoriamente..."<<endl<<endl;
+    
+}    
