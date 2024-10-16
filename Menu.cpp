@@ -1,20 +1,8 @@
+#include <iostream>
+#include "FuncionesAnexas.h"
 #include "Menu.h"
 
-
-void agregarEstacion(Red& redNacional, Station* estacionesEnELArchivo, unsigned short int tamanioArregloEstaciones){
-    
-    std::cout<<endl<<"Estaciones: "<<endl<<endl;
-    
-    for(unsigned short int i= 0; i < tamanioArregloEstaciones; i++){
-        std::cout<<estacionesEnELArchivo[i].getNombre()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getCodigo()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getGerente()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getRegion()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getUbicacion()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getNumeroSurtidores()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getSurtidoresActivos()<<endl;
-    }
-    
+Station* pedirDatosEstacionNueva(){
     string nombre;
     string gerente;
     string region;
@@ -92,26 +80,35 @@ void agregarEstacion(Red& redNacional, Station* estacionesEnELArchivo, unsigned 
         std::cout<<"Ingrese el codigo"<<endl;
     std::cin >> codigo;
     }
-    Station nuevaEstacion(nombre,codigo,gerente,region,ubicacion,numeroSurtidores,surtidoresActivos);
-    redNacional.agregarEstacion(estacionesEnELArchivo,nuevaEstacion, tamanioArregloEstaciones);
-    redNacional.setNumeroEstaciones(redNacional.getNumeroEstaciones()+1);
-    
-    std::cout<<endl<<"Estaciones: "<<endl<<endl;
-    
-    for(unsigned short int i= 0; i < tamanioArregloEstaciones; i++){
-        std::cout<<estacionesEnELArchivo[i].getNombre()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getCodigo()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getGerente()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getRegion()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getUbicacion()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getNumeroSurtidores()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getSurtidoresActivos()<<endl;
-    }
-    
+    Station* nuevaEstacion = new Station(nombre,codigo,gerente,region,ubicacion,numeroSurtidores,surtidoresActivos);
+    return nuevaEstacion;
 }
+    
+Surtidor* pedirDatosSurtidorNuevo(Station& estacionAdministrada){
+    
+    string modelo, estacionPerteneciente, codigo;
+    bool estado;
+    
+    std::cout<<"Ingrese el modelo del surtidor: "<<endl;
+    cin>>modelo;
+    
+    std::cout<<"Ingrese el codigo del surtidor: "<<endl;
+    cin>>codigo;
+    
+    estacionPerteneciente = estacionAdministrada.getCodigo();
+    estado = true;
+    
+    Surtidor* nuevoSurtidor = new Surtidor(codigo, modelo, estacionPerteneciente, estado);
+    return nuevoSurtidor;
+    
+}    
+    
+    
 
-void eliminarEstacion(Red& redNacional, Station* estacionesEnELArchivo, unsigned short int tamanioArregloEstaciones){
+short int obtenerPosicionEstacionParaEliminar(Station* estacionesEnELArchivo, unsigned short int& tamanioArregloEstaciones){
+    while(true){
     std::cout<<"Seleccione la estacion que desea eliminar..."<<endl;
+    
     for(unsigned short int i= 0; i < tamanioArregloEstaciones; i++){
         std::cout<<estacionesEnELArchivo[i].getCodigo()<<" "<<i<<endl<<endl;
     }
@@ -123,30 +120,44 @@ void eliminarEstacion(Red& redNacional, Station* estacionesEnELArchivo, unsigned
     }
     if(estacionesEnELArchivo[opcion].getSurtidoresActivos() > 0){
         std::cout<<"No se puede eliminar la estacion ya que cuenta con surtidores activos..."<<endl;
-        return;
+        return -1;
+    }else{
+        return opcion;
     }
-    else{
-        redNacional.eliminarEstacion(estacionesEnELArchivo, opcion, tamanioArregloEstaciones);
-        std::cout<<"Se elimino correctamente la estacion..."<<endl<<endl;
-        
-        std::cout<<endl<<"Estaciones: "<<endl<<endl;
     
-                for(unsigned short int i= 0; i < tamanioArregloEstaciones; i++){
-                    std::cout<<estacionesEnELArchivo[i].getNombre()<<" ";
-                    std::cout<<estacionesEnELArchivo[i].getCodigo()<<" ";
-                    std::cout<<estacionesEnELArchivo[i].getGerente()<<" ";
-                    std::cout<<estacionesEnELArchivo[i].getRegion()<<" ";
-                    std::cout<<estacionesEnELArchivo[i].getUbicacion()<<" ";
-                    std::cout<<estacionesEnELArchivo[i].getNumeroSurtidores()<<" ";
-                    std::cout<<estacionesEnELArchivo[i].getSurtidoresActivos()<<endl;
-                }
     }
+}
+
+
+void simularVenta()
+{
+    cout<<"Vendiendo...\n";
+}
+
+unsigned short int obtenerPosicionSurtidorParaEliminar(Surtidor* surtidoresEnELArchivo, unsigned short int& tamanioArregloSurtidores){
+    std::cout<<"Seleccione el surtidor que desea eliminar..."<<endl;
+    
+    for(unsigned short int i= 0; i < tamanioArregloSurtidores; i++){
+        std::cout<<surtidoresEnELArchivo[i].getCodigo()<<" "<<i<<endl<<endl;
+    }
+    unsigned short int opcion;
+    cin>>opcion;
+    while(opcion < 0 && opcion > tamanioArregloSurtidores){
+        std::cout<<"Error en elegir surtidor, seleccione nuevamente..."<<endl;
+        cin>>opcion;
+    }
+    return opcion;
     
 }
 
-void calcularVentasCadaEstacion(){
-    std::cout<<"Calculando ventas de cada estacion..."<<endl;
+void consultarHistoricoSurtidor(Surtidor* surtidoresEnELArchivo, unsigned short int& tamanioArregloSurtidores, Station& estacionAdministrada){
+    for(unsigned short int i = 0; i < tamanioArregloSurtidores; i++){
+        if(surtidoresEnELArchivo[i].getEstacionPerteneciente() == estacionAdministrada.getCodigo()){
+            estacionAdministrada.consultarHistoricoSurtidor(surtidoresEnELArchivo[i].getCodigo());
+        }
+    }
 }
+
 
 void fijarPrecios(Red& redNacional){
     
@@ -279,18 +290,7 @@ void fijarPrecios(Red& redNacional){
                     break;
                 }
                 redNacional.setPrecioSurEcoextra(_precioSurEcoextra);
-                
-                std::cout<<"Se cambiaron correctamente los precios..."<<endl<<endl;
-                cout<<redNacional.getPrecioNorteRegular()<<endl;
-                cout<<redNacional.getPrecioNortePremium()<<endl;
-                cout<<redNacional.getPrecioNorteEcoextra()<<endl;
-                cout<<redNacional.getPrecioCentroRegular()<<endl;
-                cout<<redNacional.getPrecioCentroPremium()<<endl;
-                cout<<redNacional.getPrecioCentroEcoextra()<<endl;
-                cout<<redNacional.getPrecioSurRegular()<<endl;
-                cout<<redNacional.getPrecioSurPremium()<<endl;
-                cout<<redNacional.getPrecioSurEcoextra()<<endl<<endl;
-        
+
                 break;
                 
                 case 4:
@@ -299,308 +299,47 @@ void fijarPrecios(Red& redNacional){
                 default:
                 break;
             }
+            if(opcion == 4){
+                std::cout<<"Se cambiaron correctamente los precios..."<<endl<<endl;
+                cout<<"Precio por litro Norte Regular: "<<redNacional.getPrecioNorteRegular()<<endl<<endl;
+                cout<<"Precio por litro Norte Premium: "<<redNacional.getPrecioNortePremium()<<endl<<endl;
+                cout<<"Precio por litro Norte EcoExtra: "<<redNacional.getPrecioNorteEcoextra()<<endl<<endl;
+                cout<<"Precio por litro Centro Regular: "<<redNacional.getPrecioCentroRegular()<<endl<<endl;
+                cout<<"Precio por litro Centro Premium: "<<redNacional.getPrecioCentroPremium()<<endl<<endl;
+                cout<<"Precio por litro Centro EcoExtra: "<<redNacional.getPrecioCentroEcoextra()<<endl<<endl;
+                cout<<"Precio por litro Sur Regular: "<<redNacional.getPrecioSurRegular()<<endl<<endl;
+                cout<<"Precio por litro Sur Premium: "<<redNacional.getPrecioSurPremium()<<endl<<endl;
+                cout<<"Precio por litro Sur EcoExtra: "<<redNacional.getPrecioSurEcoextra()<<endl<<endl;
+                break;
+            }
         }
     }   
-    
-    
-void menuRed(Red& redNacional, Station* estacionesEnELArchivo, unsigned short int& tamanioArregloEstaciones)
-{
-    while(true){
-        
-    cout<<"\n  --Ha entrado en gestión de la red--\n\n"
-        "1.-Agregar estacion de servicio.\n"
-        "2.-Eliminar una estación de servicio.\n"
-        "3.-Calcular monto total de ventas de cada E/S\n"
-        "4.-Fijar precios del combustible\n"
-        "5.-Volver al menú principal\n"
-        ">>> ";
-    
-    unsigned short int opcion;
-    
-    cin>>opcion;
-        while(opcion != 1 && opcion != 2 && opcion != 3 && opcion != 4 && opcion != 5){
-            std::cout<<"Opcion invalida, ingrese una nuevamente..."<<endl;
-        }
-    
-    switch(opcion){
-        case 1:
-        agregarEstacion(redNacional, estacionesEnELArchivo, tamanioArregloEstaciones);
-        break;
-        
-        case 2:
-        eliminarEstacion(redNacional, estacionesEnELArchivo, tamanioArregloEstaciones);
-        break;
-        
-        case 3:
-        calcularVentasCadaEstacion();
-        break;
-        
-        case 4:
-        fijarPrecios(redNacional);
-        break;
-        
-        case 5:
-        break;
-        
-        default:
-        break;
-    }
-    if(opcion == 5){
-        break;
-    }
-        }
-    }
+  
+  
+  
+  
+  
+void menuDefinitivo(){
 
-void agregarSurtidor(Station& estacionAdministrada, Surtidor* surtidoresEnELArchivo, unsigned short int& tamanioArregloSurtidores){
-    
-    std::cout<<endl<<"Surtidores: "<<endl<<endl;
-    
-    for(unsigned short int i= 0; i < tamanioArregloSurtidores; i++){
-        std::cout<<surtidoresEnELArchivo[i].getCodigo()<<" ";
-        std::cout<<surtidoresEnELArchivo[i].getModelo()<<" ";
-        std::cout<<surtidoresEnELArchivo[i].getEstacionPerteneciente()<<" ";
-        std::cout<<surtidoresEnELArchivo[i].getEstado()<<endl;
-    }
-    
-    string modelo, estacionPerteneciente, codigo;
-    bool estado;
-    
-    std::cout<<"Ingrese el modelo del surtidor: "<<endl;
-    cin>>modelo;
-    
-    std::cout<<"Ingrese el codigo del surtidor: "<<endl;
-    cin>>codigo;
-    
-    estacionPerteneciente = estacionAdministrada.getCodigo();
-    estado = true;
-    
-    Surtidor nuevoSurtidor(codigo, modelo, estacionPerteneciente, estado);
-    
-    estacionAdministrada.agregarSurtidor(surtidoresEnELArchivo,nuevoSurtidor, tamanioArregloSurtidores );
-    
-    std::cout<<endl<<"Surtidores: "<<endl<<endl;
-    
-    for(unsigned short int i= 0; i < tamanioArregloSurtidores; i++){
-        std::cout<<surtidoresEnELArchivo[i].getCodigo()<<" ";
-        std::cout<<surtidoresEnELArchivo[i].getModelo()<<" ";
-        std::cout<<surtidoresEnELArchivo[i].getEstacionPerteneciente()<<" ";
-        std::cout<<surtidoresEnELArchivo[i].getEstado()<<endl;
-    }
-    
-    std::cout<<"Se agrego correctamente el surtidor..."<<endl;
-    
-}
+const string nombreArchivoEstaciones = "Stations.txt";
+const string nombreArchivoSurtidores = "Surtidores.txt";
 
-void eliminarSurtidor(Surtidor* surtidoresEnELArchivo, unsigned short int& tamanioArregloSurtidores, Station& estacionAdministrada){
-            string codigosSurtidores[tamanioArregloSurtidores];
-            std::cout<<"Escriba tal cual el codigo del surtidor que desea eliminar: "<<endl;
-            for(unsigned short int i = 0; i < tamanioArregloSurtidores; i++){
-                if (surtidoresEnELArchivo[i].getEstacionPerteneciente() == estacionAdministrada.getCodigo()){
-                    codigosSurtidores[i] = surtidoresEnELArchivo[i].getEstacionPerteneciente();
-                }
-                else{
-                    codigosSurtidores[i] = "0";
-                }
-                if(codigosSurtidores[i] != "0"){
-                    std::cout<<codigosSurtidores[i]<<" ";
-                }
-            }
-            string surtidorAEliminar;
-            cin>>surtidorAEliminar;
-            unsigned short int posicionSurtidorEliminar = encontrarStringEnArreglo(codigosSurtidores, tamanioArregloSurtidores, surtidorAEliminar);
-            while( posicionSurtidorEliminar == -1){
-                std::cout<<"El codigo de este surtidor no se encuentra en los disponibles, escriba nuevamente..."<<endl;
-                cin>>surtidorAEliminar;
-                posicionSurtidorEliminar = encontrarStringEnArreglo(codigosSurtidores, tamanioArregloSurtidores, surtidorAEliminar);
-            }
-            estacionAdministrada.eliminarSurtidor(surtidoresEnELArchivo, posicionSurtidorEliminar, tamanioArregloSurtidores);
-            
-            std::cout<<"Se elimino correctamente el surtidor..."<<endl;
-}
+unsigned short int tamanioArregloEstaciones = contarLineasEnArchivo(nombreArchivoEstaciones);
+unsigned short int tamanioArregloSurtidores = contarLineasEnArchivo(nombreArchivoSurtidores);
 
-void activarDesactivarSurtidor(bool activar, unsigned short int& tamanioArregloSurtidores, Surtidor* surtidoresEnELArchivo, Station& estacionAdministrada){
+Station* estacionesEnELArchivo = new Station[tamanioArregloEstaciones];
+Surtidor* surtidoresEnELArchivo = new Surtidor[tamanioArregloSurtidores];
+
+llenarArregloEstaciones(estacionesEnELArchivo, nombreArchivoEstaciones);
+llenarArregloSurtidores(surtidoresEnELArchivo, nombreArchivoSurtidores);
+
+Red redNacional(tamanioArregloEstaciones, 15000, 20000, 10000, 15000, 20000, 10000, 15000, 20000, 10000);
+
+while(true){
     
-    string codigosSurtidores[tamanioArregloSurtidores];
-    if(activar){
-        std::cout<<"Escriba tal cual el codigo del surtidor que desea activar: "<<endl;
-    }
-    else{
-        std::cout<<"Escriba tal cual el codigo del surtidor que desea desactivar: "<<endl;
-    }
-            
-            for(unsigned short int i = 0; i < tamanioArregloSurtidores; i++){
-                if (surtidoresEnELArchivo[i].getEstacionPerteneciente() == estacionAdministrada.getCodigo()){
-                    codigosSurtidores[i] = surtidoresEnELArchivo[i].getEstacionPerteneciente();
-                }
-                else{
-                    codigosSurtidores[i] = "0";
-                }
-                if(codigosSurtidores[i] != "0"){
-                    std::cout<<codigosSurtidores[i]<<" ";
-                }
-            }
-            string surtidorActivar;
-            cin>>surtidorActivar;
-            unsigned short int posicionSurtidorActivar = encontrarStringEnArreglo(codigosSurtidores, tamanioArregloSurtidores, surtidorActivar);
-            while( posicionSurtidorActivar == -1){
-                std::cout<<"El codigo de este surtidor no se encuentra en los disponibles, escriba nuevamente..."<<endl;
-                cin>>surtidorActivar;
-                posicionSurtidorActivar = encontrarStringEnArreglo(codigosSurtidores, tamanioArregloSurtidores, surtidorActivar);
-            }
-            if(activar){
-            if(surtidoresEnELArchivo[posicionSurtidorActivar].getEstado()){
-                std::cout<<"El surtidor esta activo..."<<endl;
-                return;
-            }
-            else{
-                surtidoresEnELArchivo[posicionSurtidorActivar].setEstado(true);
-                std::cout<<"Se activo el surtidor..."<<endl;
-                return;
-            }
-            }else{
-                if(surtidoresEnELArchivo[posicionSurtidorActivar].getEstado()){
-                surtidoresEnELArchivo[posicionSurtidorActivar].setEstado(false);
-                std::cout<<"Se desactivo el surtidor..."<<endl;
-                return;
-            }
-            else{
-                std::cout<<"El surtidor esta desactivado..."<<endl;
-                return;
-            }
-            }
-
-}
-
-void consultarHistoricoSurtidor(Surtidor* surtidoresEnELArchivo, unsigned short int& tamanioArregloSurtidores, Station& estacionAdministrada){
-    for(unsigned short int i = 0; i < tamanioArregloSurtidores; i++){
-        if(surtidoresEnELArchivo[i].getEstacionPerteneciente() == estacionAdministrada.getCodigo()){
-            estacionAdministrada.consultarHistoricoSurtidor(surtidoresEnELArchivo[i].getCodigo());
-        }
-    }
-}
-
-
-void verificarFugas()
-{
-    std::cout<<"Verificando fugas..."<<endl;
-}
-
-void simularVenta()
-{
-    cout<<"Vendiendo...\n";
-}
-
+    //MENU PRINCIPAL
     
-
-void menuEstacion(Station* estacionesEnELArchivo, unsigned short int tamanioArregloEstaciones, Surtidor* surtidoresEnELArchivo, unsigned short int tamanioArregloSurtidores, unsigned short int posicionEstacionAdministrada)
-{   
-    Station estacionAdministrada = estacionesEnELArchivo[posicionEstacionAdministrada];
-    while(true){
-        
-    cout<<"\n  --Has entrado en gestión de estacion de servicio--\n\n"
-        "1.-Agregar/eliminar un surtidor a una E/S.\n"
-        "2.-Activar/desactivar un surtidor de una E/S.\n"
-        "3.-Concultar el hisorico de transacciones de cada surtidor de la E/S.\n"
-        "4.-Reportar la cantidad de litros vendida según cada categoría de combustible.\n"
-        "5.-Simular una venta de combustible.\n"
-        "6.-Asignar capacidad del tanque de suministro aleatorio entre 100 y 200 litros por categoría.\n"
-        "7.-Volver al menú principal.\n"
-        ">>> ";
-    
-    unsigned short int opcion;
-    
-    cin>>opcion;
-    while(opcion != 1 && opcion != 2 && opcion != 3 && opcion != 4 && opcion != 5 && opcion != 6 && opcion != 7 ){
-        std::cout<<"Opcion invalida, ingrese una nuevamente..."<<endl;
-        cin>>opcion;
-    }
-    
-
-    switch(opcion){
-        case 1:
-        
-        std::cout<<"\n1.-Agregar surtidor.\n2.-Eliminar surtidor\n\nIngrese una opcion para eliminar o agregar un surtidor de la estacion con codigo: "<<estacionAdministrada.getCodigo()<<endl;
-        
-        unsigned short int opcionAgregarOEliminar;
-        cin>>opcionAgregarOEliminar;
-        
-        while (opcionAgregarOEliminar != 1 && opcionAgregarOEliminar != 2){
-            std::cout<<"Ingrese una opcion para eliminar o agregar un surtidor valida: "<<endl;
-            cin>>opcionAgregarOEliminar;
-        }
-        
-        if(opcionAgregarOEliminar == 1){
-            agregarSurtidor(estacionAdministrada, surtidoresEnELArchivo, tamanioArregloSurtidores); 
-        }
-        
-        else if(opcionAgregarOEliminar == 2){
-            eliminarSurtidor(surtidoresEnELArchivo, tamanioArregloSurtidores, estacionAdministrada);
-        }
-        
-        break;
-        
-        case 2:
-        
-        std::cout<<"1.-Activar surtidor.\n2.-Desactivar surtidor\n\nIngrese una opcion para activar/desactivar el surtidor: \n\n";
-        unsigned short int opcionActivar;
-        cin>>opcionActivar;
-        
-        while(opcionActivar != 1 && opcionActivar != 2){
-            std::cout<<"Ingrese una opcion valida..."<<endl;
-            cin>>opcionActivar;
-        }
-        if(opcionActivar == 1){
-            activarDesactivarSurtidor(true, tamanioArregloSurtidores, surtidoresEnELArchivo, estacionAdministrada);
-        }else{
-            activarDesactivarSurtidor(false, tamanioArregloSurtidores, surtidoresEnELArchivo, estacionAdministrada);
-        }
-        break;
-
-        case 3:
-        consultarHistoricoSurtidor(surtidoresEnELArchivo, tamanioArregloSurtidores, estacionAdministrada);
-        break;
-        
-        case 4:
-        //litrosVendidos();
-        break;
-        
-        case 5:
-        simularVenta();
-        break;
-        
-        case 6:
-        //asignar capacidad tanque;
-        break;
-        
-        case 7:
-        break;
-        
-        default:
-            break;
-    }
-    if(opcion == 7){
-        break;
-    }
-}
-}
-
-void menu(unsigned short int& tamanioArregloSurtidores, unsigned short int& tamanioArregloEstaciones, Station* estacionesEnELArchivo, Surtidor* surtidoresEnELArchivo, Red& redNacionalColombia)
-{
-    while(true){
-        
-        std::cout<<endl<<"Estaciones: "<<endl<<endl;
-    
-    for(unsigned short int i= 0; i < tamanioArregloEstaciones; i++){
-        std::cout<<estacionesEnELArchivo[i].getNombre()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getCodigo()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getGerente()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getRegion()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getUbicacion()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getNumeroSurtidores()<<" ";
-        std::cout<<estacionesEnELArchivo[i].getSurtidoresActivos()<<endl;
-    }
-            
-        cout<<"\n  -----BIENVENIDO A LA RED NACIONAL DE TERMAX-----\n\n"<<
+    cout<<"\n  -----BIENVENIDO A LA RED NACIONAL DE TERMAX-----\n\n"<<
             "<Seleccione la opción que desee>\n\n"<<
             "1....Gestión de la red\n"<<
             "2....Gestión de estaciones de servicio\n"
@@ -610,52 +349,282 @@ void menu(unsigned short int& tamanioArregloSurtidores, unsigned short int& tama
             ">>> ";
         
         unsigned short int opcion;
-        
         cin>>opcion;
-        while(opcion != 1 && opcion != 2 && opcion != 3 && opcion != 4 && opcion != 5){
+
+        
+    if(opcion == 1){
+        
+        //MENU RED
+        
+        while(true){
+            
+        cout<<"\n  --Ha entrado en gestión de la red--\n\n"
+        "1.-Agregar estacion de servicio.\n"
+        "2.-Eliminar una estación de servicio.\n"
+        "3.-Calcular monto total de ventas de cada E/S\n"
+        "4.-Fijar precios del combustible\n"
+        "5.-Volver al menú principal\n"
+        ">>> ";
+    
+        unsigned short int opcionMenuRed;
+        cin>>opcionMenuRed;
+        
+        if(opcionMenuRed == 1){
+            
+           Station* nuevaEstacion = new Station();
+           nuevaEstacion = pedirDatosEstacionNueva();
+           redNacional.agregarEstacion(estacionesEnELArchivo, nuevaEstacion, tamanioArregloEstaciones);
+           redNacional.setNumeroEstaciones(redNacional.getNumeroEstaciones()+1);
+           delete nuevaEstacion;
+            
+        }
+        else if(opcionMenuRed == 2){
+            if(tamanioArregloEstaciones == 1){
+                std::cout<<"Solo hay una estacion, no puedes borrarla..."<<endl;
+            }else{
+            short int posicionParaEliminar;
+            posicionParaEliminar = obtenerPosicionEstacionParaEliminar(estacionesEnELArchivo, tamanioArregloEstaciones);
+            if(posicionParaEliminar = -1){
+                std::cout<<"Continuando..."<<endl;
+            }else{
+            redNacional.eliminarEstacion(estacionesEnELArchivo, opcionMenuRed, tamanioArregloEstaciones);
+            std::cout<<"Se elimino correctamente la estacion..."<<endl<<endl;
+            }
+            }  
+        }
+        else if(opcionMenuRed == 3){
+            std::cout<<"Opcion 3"<<endl;
+            
+        }
+        else if(opcionMenuRed == 4){
+            fijarPrecios(redNacional);
+        }
+        else if(opcionMenuRed == 5){
+            std::cout<<"Saliendo al menu principal..."<<endl;
+            break;
+        }
+        else{
             std::cout<<"Opcion invalida, ingrese una nuevamente..."<<endl;
-            
         }
-        unsigned short int indiceEstacionParaGestionar;
-        switch(opcion){
-            case 1:
-            menuRed(redNacionalColombia, estacionesEnELArchivo, tamanioArregloEstaciones);
-            break;
-            
-            case 2:
-            std::cout<<"Elija la estacion que desea gestionar para acceder al menu: "<<endl;
-            
-            for(unsigned short int i= 0; i < tamanioArregloEstaciones; i++){
-                std::cout<<i<<".-"<<estacionesEnELArchivo[i].getCodigo()<<" "<<endl;
-            }
-            unsigned short int opcionEstacion;
+        
+    }
+}    
+    
+
+    else if(opcion == 2){
+        
+        //MENU ESTACION
+        
+        std::cout<<"Elija la estacion que desea gestionar para acceder al menu: "<<endl;
+        
+        for(unsigned short int i= 0; i < tamanioArregloEstaciones; i++){
+            std::cout<<i<<".-"<<estacionesEnELArchivo[i].getCodigo()<<" "<<endl;
+        }
+        unsigned short int opcionEstacion;
+        cin>>opcionEstacion;
+        while(opcion < 0 && opcionEstacion > tamanioArregloEstaciones){
+            std::cout<<"Error en elegir estacion, seleccione nuevamente..."<<endl;
             cin>>opcionEstacion;
-            while(opcion < 0 && opcionEstacion > tamanioArregloEstaciones){
-                std::cout<<"Error en elegir estacion, seleccione nuevamente..."<<endl;
-                cin>>opcionEstacion;
-            }
-            
-            indiceEstacionParaGestionar = opcionEstacion;
-            menuEstacion(estacionesEnELArchivo, tamanioArregloEstaciones, surtidoresEnELArchivo, tamanioArregloSurtidores, indiceEstacionParaGestionar);
-            break;
-            
-            case 3:
-            verificarFugas();
-            break;
-            
-            case 4:
-            simularVenta();
-            break;
-            
-            case 5:
-                cout << "\n<<Gracias por usar el sistema. Hasta pronto>>\n";
-                break;
-            
-            default:
-                break;
         }
-        if(opcion == 5){
-                break;
+        unsigned short int* posicionEstacionAdministrada = new unsigned short int;
+        *posicionEstacionAdministrada = opcionEstacion;
+        Station estacionAdministrada = estacionesEnELArchivo[*posicionEstacionAdministrada];
+        
+        std::cout<<endl<<"Si desea escojer otra estacion, salga y vuelva a entrar..."<<endl;
+        
+        while(true){
+        
+        cout<<"\n  --Has entrado en gestión de estacion de servicio--\n\n"
+        "1.-Agregar/eliminar un surtidor a una E/S.\n"
+        "2.-Activar/desactivar un surtidor de una E/S.\n"
+        "3.-Concultar el hisorico de transacciones de cada surtidor de la E/S.\n"
+        "4.-Reportar la cantidad de litros vendida según cada categoría de combustible.\n"
+        "5.-Simular una venta de combustible.\n"
+        "6.-Asignar capacidad del tanque de suministro aleatorio entre 100 y 200 litros por categoría.\n"
+        "7.-Volver al menú principal.\n"
+        ">>> ";
+        
+        unsigned short int opcionMenuEstacion;
+    
+        cin>>opcionMenuEstacion;
+        while(opcionMenuEstacion != 1 && opcionMenuEstacion != 2 && opcionMenuEstacion != 3 && opcionMenuEstacion != 4 && opcionMenuEstacion != 5 && opcionMenuEstacion != 6 && opcionMenuEstacion != 7 ){
+        std::cout<<"Opcion invalida, ingrese una nuevamente..."<<endl;
+        cin>>opcionMenuEstacion;
         }
-            }
+        if(opcionMenuEstacion == 1){
+        Surtidor* nuevoSurtidor = new Surtidor();
+        nuevoSurtidor = pedirDatosSurtidorNuevo(estacionAdministrada);
+       
+        estacionAdministrada.agregarSurtidor(surtidoresEnELArchivo, nuevoSurtidor, tamanioArregloSurtidores);
+        estacionAdministrada.setNumeroSurtidores(estacionAdministrada.getNumeroSurtidores()+1);
+        estacionAdministrada.setSurtidoresActivos(estacionAdministrada.getSurtidoresActivos()+1);
+        
+        std::cout<<"Se agrego el surtidor..."<<endl;
+      
+        delete nuevoSurtidor;
+        
+        }
+        
+        
+        else if(opcionMenuEstacion == 2){
+            
+            unsigned short int* posicionParaEliminar = new unsigned short int;
+            *posicionParaEliminar = obtenerPosicionSurtidorParaEliminar(surtidoresEnELArchivo, tamanioArregloSurtidores);
+            estacionAdministrada.eliminarSurtidor(surtidoresEnELArchivo, posicionParaEliminar, tamanioArregloSurtidores);
+            std::cout<<"Se elimino correctamente el surtidor..."<<endl<<endl;
+            estacionAdministrada.setNumeroSurtidores(estacionAdministrada.getNumeroSurtidores()-1);
+            estacionAdministrada.setSurtidoresActivos(estacionAdministrada.getSurtidoresActivos()-1);
+            delete posicionParaEliminar;
+        }
+        
+        
+        else if(opcionMenuEstacion == 3){
+            consultarHistoricoSurtidor(surtidoresEnELArchivo, tamanioArregloSurtidores, estacionAdministrada);
+            
+        }
+        else if(opcionMenuEstacion == 4){
+            estacionesEnELArchivo[0].reportarCantidadLitrosVendidosCategoriaCombustible();
+        }
+        else if(opcionMenuEstacion == 5){
+            void simularVenta();
+        }
+        else if(opcionMenuEstacion == 6){
+            estacionAdministrada.asignarLitrosAlTanque();
+        }
+        
+        else if(opcionMenuEstacion == 7){
+            std::cout<<"Saliendo"<<endl;
+            delete posicionEstacionAdministrada;
+            break;
+        }
+        else{
+            std::cout<<"Opcion no valida, ingrese una opcion nuevamente..."<<endl;
+        }
+    }
+        
+    }
+    else if(opcion == 3){
+        std::cout<<"Opcion 3 menu principal"<<endl;
+        
+    }
+    else if(opcion == 4){
+        std::cout<<"Opcion 4 menu principal"<<endl;
+    }
+    else if(opcion == 5){
+        std::cout<<"Gracias por usar el sistema, vuelva pronto..."<<endl;
+        escribirDatosSurtidoresEnArchivo(surtidoresEnELArchivo, tamanioArregloSurtidores);
+        escribirDatosEstacionesEnArchivo(estacionesEnELArchivo, tamanioArregloEstaciones);
+        delete[] estacionesEnELArchivo;
+        delete[] surtidoresEnELArchivo;
+        return;
+        break;
+    }
+    else{
+       std::cout<<"Opcion invalida, ingrese una nuevamente..."<<endl; 
+    }
+    
+}
+//REPORTAR VENTA
+/*
+string codigoSurtidor = surtidoresEnELArchivo[0].getCodigo();
+string tipoCombustible = "Regular";
+string metodoPago = "Tdebito";
+unsigned short int cantidadCombustible = 5;
+unsigned int numeroDocumento = 1022144281;
+unsigned short int dineroEnCop = 5000;
+
+surtidoresEnELArchivo[0].reportarVenta(tipoCombustible, cantidadCombustible, metodoPago, numeroDocumento,dineroEnCop, codigoSurtidor);
+*/
+
+//PEDIR DATOS SURTIDOR
+/*
+string codigoVenta = "sbN";
+string modelo = "pro2020";
+string estacionPerteneciente = "A12";
+bool estado = 0;
+
+Surtidor nuevoSurtidor(codigoVenta, modelo, estacionPerteneciente, estado);
+
+surtidoresEnELArchivo = estacionesEnELArchivo[0].agregarSurtidor(surtidoresEnELArchivo, nuevoSurtidor, tamanioArregloSurtidores);
+*/
+/*
+string nombre;
+string gerente;
+string region;
+string ubicacion;
+unsigned short int numeroSurtidores;
+unsigned short int surtidoresActivos;
+
+cout<<"Ingrese nombre de la estacion\n>>>";
+cin>>nombre;
+while(nombre.length() < 3 || nombre.length() > 20){
+    cout<<"X Formato invalido, intente de nuevo X\n";
+    cout<<"Ingrese nombre de la estacion\n>>>";
+    cin>>nombre;
+}
+cout<<"\nEl nombre es valido\n";
+
+while(true){
+    cout<<"Ingrese nombre del gerente de la estacion\n>>>";
+    string nombreGerente, apellidoGerente;
+    cin>>nombreGerente;
+    cout<<"Ingrese apellido del gerente de la estacion\n>>>";
+    cin>>apellidoGerente;
+    gerente = nombreGerente+" "+apellidoGerente;
+    break;
+}
+cout<<"\n<El nombre es valido>\n";
+
+while(true){
+    cout<<"Ingrese la región(norte,centro,sur)\n>>>";
+    cin>>region;
+    if( region != "norte" && region != "centro" && region != "sur"){
+        cout<<"\nX Formato invalido, intente de nuevo X\n";
+    }
+    else{
+        break;
+    }
+}
+
+while(true){
+    cout<<"Ingrese ubicación GPS, formato de ejemplo 123°N456°E\n>>>";
+    cin>>ubicacion;
+    break;
+}
+while(true){
+    cout<<"Ingrese numero de surtidores\n>>>";
+    cin>>numeroSurtidores;
+    if(numeroSurtidores < 2 || numeroSurtidores > 12){
+        cout<<"\nDeben haber minimo 2 surtidores y maximo 12\n";
+    }else{
+        break;
+    }
+    
+}
+while(true){
+    cout<<"Ingrese numero de surtidores activos\n>>>";
+    cin>>surtidoresActivos;
+    if(surtidoresActivos > numeroSurtidores){
+        cout<<"\nSolo tienes "<<numeroSurtidores<<" surtidores.\n";
+    }else{
+        break;
+    }
+}
+string codigo;
+std::cout<<"Ingrese el codigo"<<endl;
+std::cin>> codigo;
+while(codigo.length() < 3 || codigo.length() > 3){
+    std::cout<<"Hubo un error..."<<endl;
+    std::cout<<"Ingrese el codigo"<<endl;
+std::cin >> codigo;
+}
+
+Station* nuevaEstacion = new Station(nombre,codigo,gerente,region,ubicacion,numeroSurtidores,surtidoresActivos);
+
+redNacional.agregarEstacion(estacionesEnELArchivo,nuevaEstacion, tamanioArregloEstaciones);
+
+delete[] nuevaEstacion;
+*/
+
+return;
 }
