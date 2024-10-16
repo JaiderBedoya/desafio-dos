@@ -2,6 +2,7 @@
 #define RED_H
 #include <iostream>
 #include <string>
+#include <algorithm>
 class Red;
 #include "Surtidor.h"
 using namespace std;
@@ -46,13 +47,8 @@ public:
     void setPrecioSurPremium(unsigned short int _precioSurPremium);    
     void setPrecioSurEcoextra(unsigned short int _precioSurEcoextra);
     
-    void agregarEstacion(Station*& arregloEstaciones, Station& nuevaEstacion, unsigned short int& tamanio);
+    void agregarEstacion(Station*& arregloEstaciones, Station* nuevaEstacion, unsigned short int& tamanio);
     void eliminarEstacion(Station*& arregloEstaciones, unsigned short int idxEstacionParaEliminar, unsigned short int& tamanio);
-    
-
-
+    //void calcularMontoVentasCategoriaCombustible();
 
 };
-
-
-#endif
