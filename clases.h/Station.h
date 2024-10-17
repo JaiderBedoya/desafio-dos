@@ -16,7 +16,7 @@ class Station {
         string gerente;
         string region;
         string ubicacion;
-        unsigned short int tanque[3] = {0,0,0};
+        unsigned short int tanque[3] = {200,200,200};
         unsigned short int numeroSurtidores;
         unsigned short int surtidoresActivos;
         
@@ -45,6 +45,11 @@ class Station {
         void setUbicacion(string nuevaUbicacion);
         void setNumeroSurtidores(unsigned short int nuevoNumeroSurtidores);
         void setSurtidoresActivos(unsigned short int numeroSurtidoresActivos);
+        void setCombustibleRegular(unsigned short int cantidadCombustibleRegular);
+        void setCombustiblePremium(unsigned short int cantidadCombustiblePremium);
+        void setCombustibleEcoExtra(unsigned short int cantidadCombustibleEcoExtra);
+        
+        
         void agregarSurtidor(Surtidor*& arregloSurtidores, Surtidor* nuevoSurtidor, unsigned short int& tamanio);//
         void eliminarSurtidor(Surtidor*& arregloSurtidores, unsigned short int* idxSurtidorParaEliminar, unsigned short int& tamanio);//
         void consultarHistoricoSurtidor(const string& codigoSurtidor);//
@@ -52,7 +57,6 @@ class Station {
         void asignarLitrosAlTanque();
         void imprimirDatosHistorico(string& fecha, string& tipoCombustible, string& cantidadCombustible, string& metodoPago, string& numeroDocumento, string& dineroEnCop, string& codigoSurtidor);//
         void venderCombustible(string& tipoCombustible, unsigned short int cantidadRequerida);
-        void reportarCantidadLitrosVendidosCategoriaCombustible();
 };
 
 #endif
