@@ -49,6 +49,8 @@ public:
     
     void agregarEstacion(Station*& arregloEstaciones, Station* nuevaEstacion, unsigned short int& tamanio);
     void eliminarEstacion(Station*& arregloEstaciones, unsigned short int idxEstacionParaEliminar, unsigned short int& tamanio);
-    //void calcularMontoVentasCategoriaCombustible();
 
 };
+
+
+#endif
