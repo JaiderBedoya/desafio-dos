@@ -6,15 +6,19 @@
 #include "Station.h"
 #include "FuncionesAnexas.h"
 
-void menu();
-Station pedirDatosEstacion();
-void fijarPrecios(Red& redNacional);
-void menuRed(Red& redNacional, Station* arregloEstaciones, unsigned short int& tamanioArregloEstaciones);
-void menuEstacion();
-void verificarFugas();
-void simularVenta();
-void activarDesactivarSurtidor(bool activar, unsigned short int& tamanioArregloSurtidores, Surtidor* surtidoresEnELArchivo, Station* estacionAdministrada);
+const unsigned short int retornarValorPrecioCombustibleRegion(string& tipoCombustible, string& region, Red& redNacional);
+string devolverCodigoSurtidorAleatorio(Surtidor* arregloSurtidores, unsigned short int& tamanioArregloSurtidores, Station& estacionAdministrada);
+void activarDesactivarSurtidor(bool activar, unsigned short int& tamanioArregloSurtidores, Surtidor* surtidoresEnELArchivo, Station& estacionAdministrada);
+Station* pedirDatosEstacionNueva(Station* arregloEstaciones, unsigned short int& tamanioArreglo);
+Surtidor* pedirDatosSurtidorNuevo(Station& estacionAdministrada, Surtidor* arregloSurtidores, unsigned short int& tamanioArreglo);
+void venderCombustible(Surtidor* surtidoresEnELArchivo, unsigned short int& tamanioArregloSurtidores, Station& estacionAdministrada, Red& redNacional);
+string obtenerPosicionEstacionParaEliminar(Station* estacionesEnELArchivo, unsigned short int& tamanioArregloEstaciones);
+unsigned short int obtenerPosicionSurtidorParaEliminar(Surtidor* surtidoresEnELArchivo, unsigned short int& tamanioArregloSurtidores);
 void consultarHistoricoSurtidor(Surtidor* surtidoresEnELArchivo, unsigned short int& tamanioArregloSurtidores, Station& estacionAdministrada);
-void menuDefinitivo();
+void fijarPrecios(Red& redNacional);
+void desplegarMenuPrincipal();
+void desplegarMenuPrincipal();
+void desplegarMenuRed();
+void menu();
 
 #endif
