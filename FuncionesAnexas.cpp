@@ -141,18 +141,18 @@ string obtenerFechaActual(){
     string segundos = hora.substr(pos_m + 1);
     
     //Estas siguientes lineas de codigo son por el contexto en el que me encuentro, en mi chromebook la libreria ctime funciona mal y no convierte el estandar utc a utc-5
-    
-    unsigned short int horaNumero = stoi(hora);
+
+    unsigned short int horaNumero = stoi(horas);
     //Restarle 5 es porque en colombia se usa el utc 5
     horaNumero -= 5;
     
-    if(horaNumero < 12){
-        hora = "0" + to_string(horaNumero);
+    if(horaNumero < 10){
+        horas = "0" + to_string(horaNumero);
     }
     else{
-        hora = to_string(horaNumero);
+        horas = to_string(horaNumero);
     }
-    string fechaActual = fecha+" "+hora+":"+minutos+":"+segundos;
+    string fechaActual = fecha+" "+horas+":"+minutos+":"+segundos;
     
     return fechaActual;
 }
@@ -167,6 +167,8 @@ unsigned short int numeroAletatorio(unsigned short int minimo, unsigned short in
 }
 
 void escribirDatosSurtidoresEnArchivo(Surtidor* arregloSurtidores, unsigned short int tamanioArreglo){
+    
+    std::cout<<"Escribiendo datos surtidor..."<<endl;
     
     string nombreArchivo = "Surtidores.txt";
 
@@ -189,6 +191,8 @@ void escribirDatosSurtidoresEnArchivo(Surtidor* arregloSurtidores, unsigned shor
 
 void escribirDatosEstacionesEnArchivo(Station* arregloEstaciones, unsigned short int tamanioArreglo){
     
+    std::cout<<"Escribiendo datos estacion..." <<endl;
+    
     string nombreArchivo = "Stations.txt";
 
     std::ofstream archivoEstaciones(nombreArchivo, std::ios::out);
@@ -207,7 +211,7 @@ void escribirDatosEstacionesEnArchivo(Station* arregloEstaciones, unsigned short
     
 }
 
-unsigned short int obtenerIdxSurtidorEliminar(Surtidor* arregloSurtidores, string& codigoSurtidorAEliminar, unsigned short int tamanioArreglo){
+short int obtenerIdxSurtidorEliminar(Surtidor* arregloSurtidores, string& codigoSurtidorAEliminar, unsigned short int& tamanioArreglo){
     for(unsigned short int i = 0; i < tamanioArreglo; i++){
         if(arregloSurtidores[i].getCodigo() == codigoSurtidorAEliminar){
             return i;
@@ -217,7 +221,7 @@ unsigned short int obtenerIdxSurtidorEliminar(Surtidor* arregloSurtidores, strin
     return -1;
 }
 
-unsigned short int obtnerIdxEstacionEliminar(Station* arregloEstaciones, string& codigoEstacionAEliminar, unsigned short int tamanioArreglo){
+short int obtnerIdxEstacionEliminar(Station* arregloEstaciones, string& codigoEstacionAEliminar, unsigned short int& tamanioArreglo){
     for(unsigned short int i = 0; i < tamanioArreglo; i++){
         if(arregloEstaciones[i].getCodigo() == codigoEstacionAEliminar){
             return i;
@@ -264,4 +268,315 @@ short int encontrarStringEnArreglo(string* arregloStrings, unsigned short int ta
         }
     }
     return -1;
+}
+
+string generarCodigoEstacion(Station* arregloEstaciones, unsigned short int& tamanioArreglo){
+    
+    //65-90 mayusculas
+    //97-122 minusculas
+    
+    while(true){
+    
+    char letra = numeroAletatorio(65, 90);
+    char primerNumero = numeroAletatorio(48,57);
+    char segundoNumero = numeroAletatorio(48,57);
+    
+    string codigoNuevo;
+    
+    codigoNuevo += letra;
+    codigoNuevo += primerNumero;
+    codigoNuevo += segundoNumero;
+    
+    for(unsigned short int i = 0; i < tamanioArreglo; i++){
+            if(arregloEstaciones[i].getCodigo() == codigoNuevo){
+                break;
+            }else if(i == tamanioArreglo-1 && (codigoNuevo != arregloEstaciones[i].getCodigo())){
+                return codigoNuevo;
+            }
+        }
+    }
+}
+
+
+string generarCodigoSurtidor(Surtidor* arregloSurtidores, unsigned short int& tamanioArreglo){
+    
+    //65-90 mayusculas
+    //97-122 minusculas
+    
+    while(true){
+    
+    char primeraLetra = numeroAletatorio(97,122);
+    char segundaLetra = numeroAletatorio(97,122);
+    char terceraLetra = numeroAletatorio(65,90);
+    
+    string codigoNuevo;
+    
+    codigoNuevo += primeraLetra;
+    codigoNuevo += segundaLetra;
+    codigoNuevo += terceraLetra;
+    
+    for(unsigned short int i = 0; i < tamanioArreglo; i++){
+            if(arregloSurtidores[i].getCodigo() == codigoNuevo){
+                break;
+            }else if(i == tamanioArreglo-1 && (codigoNuevo != arregloSurtidores[i].getCodigo())){
+                return codigoNuevo;
+            }
+        }
+    }
+}
+
+void reportarCantidadLitrosVendidosCategoriaCombustible(Surtidor* arregloSurtidores, unsigned short int& tamanioArregloSurtidores, const string& codigoEstacion, bool fuga, Station& estacionAdministrada){
+    
+    const string nomArchivo = "VentasSurtidores.txt";
+    
+    ifstream file(nomArchivo);
+    if (!file.is_open()) {
+        cerr << "Error abriendo archivo: " << nomArchivo << endl;
+        return ;
+    }
+
+    unsigned long int litrosVendidosRegular, litrosVendidosPremium, litrosVendidosEcoExtra;
+    
+    litrosVendidosRegular = 0;
+    litrosVendidosPremium = 0;
+    litrosVendidosEcoExtra = 0;
+    
+    string Regular = "Regular";
+    string Premium = "Premium";
+    string EcoExtra = "EcoExtra";
+    
+    string litrosVendidos, primerDigito, segundoDigito, codigoSurtidor, linea;
+    
+    unsigned short int contadorCaracterDeterminante ;
+    
+    while (getline(file, linea)) { 
+        
+        contadorCaracterDeterminante = 0;
+        
+        codigoSurtidor = "";
+        
+        codigoSurtidor += linea[linea.length()-3];
+        codigoSurtidor += linea[linea.length()-2];
+        codigoSurtidor += linea[linea.length()-1];
+        
+        short int posicionSurtidor;
+        posicionSurtidor = obtenerIdxSurtidorEliminar(arregloSurtidores, codigoSurtidor, tamanioArregloSurtidores);
+        
+        if(posicionSurtidor != -1){
+        
+        if(linea.find(arregloSurtidores[posicionSurtidor].getCodigo()) != std::string::npos && (arregloSurtidores[posicionSurtidor].getEstacionPerteneciente() == codigoEstacion)){
+            
+            unsigned short int j = 0;
+            while(true){
+                
+                if(linea[j] == '|'){
+                    contadorCaracterDeterminante++;
+                }
+                if(contadorCaracterDeterminante == 1 && linea.find(Regular) != std::string::npos){
+                    
+                        litrosVendidos = "";
+                        
+                        primerDigito = linea[j+1];
+                        segundoDigito = linea[j+2];
+                        
+                        litrosVendidos += primerDigito;
+                        litrosVendidos += segundoDigito;
+                        
+                        litrosVendidosRegular += stoi(litrosVendidos);
+                        break;
+    
+                }
+                else if(contadorCaracterDeterminante == 1 && linea.find(Premium) != std::string::npos){
+                    
+                        litrosVendidos = "";
+                    
+                        primerDigito = linea[j+1];
+                        segundoDigito = linea[j+2];
+                        
+                        litrosVendidos += primerDigito;
+                        litrosVendidos += segundoDigito;
+                        
+                        litrosVendidosPremium += stoi(litrosVendidos);
+                        break;
+    
+                }
+                else if(contadorCaracterDeterminante == 1 && linea.find(EcoExtra) != std::string::npos){
+                    
+                        litrosVendidos = "";
+                    
+                        primerDigito = linea[j+1];
+                        segundoDigito = linea[j+2];
+                        
+                        litrosVendidos += primerDigito;
+                        litrosVendidos += segundoDigito;
+                        
+                        litrosVendidosEcoExtra += stoi(litrosVendidos);
+                        break;
+                }
+                j++;
+            }
+        }
+        }
+        else{
+            std::cout<<"El surtidor con codigo: "<<codigoSurtidor<<" se elimino o no se encuentra..."<<endl;
+        }
+    }
+    
+    std::cout<<"Litros vendidos de combustible Regular: "<<litrosVendidosRegular<<" en la estacion: "<<codigoEstacion<<endl;
+    std::cout<<"Litros vendidos de combustible Premium: "<<litrosVendidosPremium<<" en la estacion: "<<codigoEstacion<<endl;
+    std::cout<<"Litros vendidos de combustible EcoExtra: "<<litrosVendidosEcoExtra<<" en la estacion: "<<codigoEstacion<<endl;
+    
+    if(fuga){
+        std::cout<<"Verificando Fugas..."<<endl;
+        if(litrosVendidosRegular+estacionAdministrada.getCombustibleRegular() < 190){
+            std::cout<<endl<<"Hay una fuga en la estacion, especificamente con el tanque Regular..."<<endl;
+        }else{
+            std::cout<<endl<<"No hay fugas en el tanque Regular"<<endl;
+        }
+        if(litrosVendidosPremium+estacionAdministrada.getCombustiblePremium() < 190){
+            std::cout<<endl<<"Hay una fuga en la estacion, especificamente con el tanque Premium..."<<endl;
+        }else{
+            std::cout<<endl<<"No hay fugas en el tanque Premium"<<endl;
+        }
+        if(litrosVendidosEcoExtra+estacionAdministrada.getCombustibleEcoExtra() < 190){
+            std::cout<<endl<<"Hay una fuga en la estacion, especificamente con el tanque EcoExtra..."<<endl;
+        }else{
+            std::cout<<endl<<"No hay fugas en el tanque EcoExtra"<<endl;
+        }
+        
+    }
+
+    
+    file.close();
+}
+
+bool verificarTipoDocumento(string& documento){
+    
+    for(char digito : documento){
+        if(digito != '0' && digito != '1' && digito != '2' && digito != '3' && digito != '4' && digito != '5' && digito != '6' && digito != '7' && digito != '8' && digito != '9' ){
+            return false;
+        }
+    }
+    return true;
+}
+
+
+void montoTotalVentasCategoriaCombustible(Surtidor* arregloSurtidores, unsigned short int& tamanioArregloSurtidores, const string& codigoEstacion){
+    
+    const string nomArchivo = "VentasSurtidores.txt";
+    
+    ifstream file(nomArchivo);
+    if (!file.is_open()) {
+        cerr << "Error abriendo archivo: " << nomArchivo << endl;
+        return ;
+    }
+
+    unsigned long long int dineroVendidoRegular, dineroVendidoPremium, dineroVendidoEcoExtra;
+    
+    dineroVendidoRegular = 0;
+    dineroVendidoPremium = 0;
+    dineroVendidoEcoExtra = 0;
+    
+    string Regular = "Regular";
+    string Premium = "Premium";
+    string EcoExtra = "EcoExtra";
+    
+    string cantidadVendida, dineroGanado,codigoSurtidor, linea;
+    
+    unsigned short int contadorCaracterDeterminante ;
+    
+    while (getline(file, linea)) { 
+        
+        contadorCaracterDeterminante = 0;
+        
+        codigoSurtidor = "";
+        
+        codigoSurtidor += linea[linea.length()-3];
+        codigoSurtidor += linea[linea.length()-2];
+        codigoSurtidor += linea[linea.length()-1];
+        
+        short int posicionSurtidor;
+        posicionSurtidor = obtenerIdxSurtidorEliminar(arregloSurtidores, codigoSurtidor, tamanioArregloSurtidores);
+        
+        if(posicionSurtidor != -1){
+        
+        if(linea.find(arregloSurtidores[posicionSurtidor].getCodigo()) != std::string::npos && (arregloSurtidores[posicionSurtidor].getEstacionPerteneciente() == codigoEstacion)){
+            
+            unsigned short int j = 0, copiaJ = 0;
+            while(true){
+                if(linea[j] == '|'){
+                    contadorCaracterDeterminante++;
+                }
+                if(contadorCaracterDeterminante == 5 && linea.find(Regular) != std::string::npos){
+                    
+                        cantidadVendida = "";
+                        
+                        copiaJ = j+1;
+                        dineroGanado ="";
+                        while(true){
+                            dineroGanado += linea[copiaJ];
+                            copiaJ++;
+                            if(linea[copiaJ] == '|'){
+                                break;
+                            }
+                        }
+                        cantidadVendida += dineroGanado;
+                        
+                        dineroVendidoRegular += stoi(cantidadVendida);
+                        break;
+    
+                }
+                else if(contadorCaracterDeterminante == 5 && linea.find(Premium) != std::string::npos){
+                    
+                        cantidadVendida = "";
+                        
+                        copiaJ = j+1;
+                        dineroGanado ="";
+                        while(true){
+                            dineroGanado += linea[copiaJ];
+                            copiaJ++;
+                            if(linea[copiaJ] == '|'){
+                                break;
+                            }
+                        }
+                        cantidadVendida += dineroGanado;
+                        
+                        dineroVendidoPremium += stoi(cantidadVendida);
+                        break;
+    
+                }
+                else if(contadorCaracterDeterminante == 5 && linea.find(EcoExtra) != std::string::npos){
+                    
+                        cantidadVendida = "";
+                        
+                        copiaJ = j+1;
+                        dineroGanado ="";
+                        while(true){
+                            dineroGanado += linea[copiaJ];
+                            copiaJ++;
+                            if(linea[copiaJ] == '|'){
+                                break;
+                            }
+                        }
+                        
+                        cantidadVendida += dineroGanado;
+                        
+                        dineroVendidoEcoExtra += stoi(cantidadVendida);
+                        break;
+                }
+                j++;
+            }
+        }
+        }
+        else{
+            std::cout<<"El surtidor con codigo: "<<codigoSurtidor<<" se elimino o no se encuentra..."<<endl;
+        }
+    }
+    
+    std::cout<<"Monto total vendido de combustible Regular: "<<dineroVendidoRegular<<" en la estacion: "<<codigoEstacion<<endl;
+    std::cout<<"Monto total vendido combustible Premium: "<<dineroVendidoPremium<<" en la estacion: "<<codigoEstacion<<endl;
+    std::cout<<"Monto total vendido combustible EcoExtra: "<<dineroVendidoEcoExtra<<" en la estacion: "<<codigoEstacion<<endl;
+
+    
+    file.close();
 }
