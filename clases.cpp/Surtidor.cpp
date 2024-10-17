@@ -33,7 +33,7 @@ void Surtidor::setEstacionPerteneciente(string nuevaEstacionPerteneciente){
 void Surtidor::setEstado(bool nuevoEstado){
     estado = nuevoEstado;
 }
-void Surtidor::reportarVenta(string& tipoCombustible,unsigned short int cantidadCombustibleVendida, string& metodoPago, unsigned int numeroDocumento, unsigned short int dineroEnCop, string& codigoSurtidor){
+void Surtidor::reportarVenta(string& tipoCombustible,unsigned short int cantidadCombustibleVendida, string& metodoPago, unsigned int& numeroDocumento, unsigned int dineroEnCop, string& codigoSurtidor){
     string nomArchivo = "VentasSurtidores.txt";
     
     ofstream file(nomArchivo, ios::out | ios::app);
