@@ -33,7 +33,7 @@ class Surtidor {
         void setEstacionPerteneciente(string nuevaEstacionPerteneciente);
         void setEstado(bool nuevoEstado);
         
-        void reportarVenta(string& tipoCombustible,unsigned short int cantidadCombustibleVendida, string& metodoPago, unsigned int numeroDocumento, unsigned short int dineroEnCop,string& codigoSurtidor);
+        void reportarVenta(string& tipoCombustible,unsigned short int cantidadCombustibleVendida, string& metodoPago, unsigned int& numeroDocumento, unsigned int dineroEnCop,string& codigoSurtidor);
     
 };
 #endif
