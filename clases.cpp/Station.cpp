@@ -60,12 +60,23 @@ void Station::setNumeroSurtidores(unsigned short int nuevoNumeroSurtidores){
 void Station::setSurtidoresActivos(unsigned short int numeroSurtidoresActivos){
     numeroSurtidoresActivos = numeroSurtidoresActivos;
 }
+void Station::setCombustibleRegular(unsigned short int cantidadCombustibleRegular){
+    tanque[0] = cantidadCombustibleRegular;
+}
+void Station::setCombustiblePremium(unsigned short int cantidadCombustiblePremium){
+    tanque[1] = cantidadCombustiblePremium;
+}
+void Station::setCombustibleEcoExtra(unsigned short int cantidadCombustibleEcoExtra){
+    tanque[2] = cantidadCombustibleEcoExtra;
+}
+
 
 void Station::asignarLitrosAlTanque(){
     for(unsigned short int i = 0; i < 3; i++){
         unsigned short int numeroRandom = numeroAletatorio(100, 200);
         tanque[i] = numeroRandom;
     }
+    std::cout<<endl<<"Se ha recargado el tanque..."<<endl;
 }
 
 void Station::imprimirDatosHistorico(string& fecha, string& tipoCombustible, string& cantidadCombustible, string& metodoPago, string& numeroDocumento, string& dineroEnCop, string& codigoDelSurtidor){
@@ -115,8 +126,7 @@ void Station::consultarHistoricoSurtidor(const string& codigoSurtidor){
             numeroDocumento = arregloDatosVenta[4];
             dineroEnCop = arregloDatosVenta[5];
             codigoDelSurtidor = arregloDatosVenta[6];
-            
-            
+
             imprimirDatosHistorico(fecha, tipoCombustible, cantidadCombustible, metodoPago, numeroDocumento, dineroEnCop, codigoDelSurtidor);
         }
     }
@@ -138,8 +148,6 @@ void Station::agregarSurtidor(Surtidor*& arregloSurtidores, Surtidor* nuevoSurti
     tamanio++;
     
 }
-
-
 
 void Station::eliminarSurtidor(Surtidor*& arregloSurtidores, unsigned short int* idxSurtidorParaEliminar, unsigned short int& tamanio){
     
@@ -164,68 +172,4 @@ void Station::eliminarSurtidor(Surtidor*& arregloSurtidores, unsigned short int*
     arregloSurtidores = nuevoArreglo;
     tamanio--;
     
-}
-
-void Station::reportarCantidadLitrosVendidosCategoriaCombustible(){
-    
-    const string nomArchivo = "VentasSurtidores.txt";
-    
-    ifstream file(nomArchivo);
-    if (!file.is_open()) {
-        cerr << "Error abriendo archivo: " << nomArchivo << endl;
-        return ;
-    }
-
-    unsigned long int litrosVendidosRegular, litrosVendidosPremium, litrosVendidosEcoExtra;
-    string Regular = "Regular";
-    string Premium = "Premium";
-    string EcoExtra = "EcoExtra";
-    
-    string linea;
-    
-    unsigned short int contadorCaracterDeterminante = 0;
-    while (getline(file, linea)) { 
-        for(unsigned short int i = 0; i < linea.length(); i++){
-            string litrosVendidos;
-            if(linea[i] == '|'){
-                contadorCaracterDeterminante++;
-            }
-            if(contadorCaracterDeterminante == 1 && linea.find(Regular) != std::string::npos){
-                if(linea[i+2] == '|'){
-                    litrosVendidos += linea[i+1];
-                    litrosVendidosRegular += stoi(litrosVendidos);
-                }else{
-                    litrosVendidos = linea[i+1]+linea[i+2];
-                    litrosVendidosRegular += stoi(litrosVendidos);
-                }
-            }
-            else if(contadorCaracterDeterminante == 1 && linea.find(Premium) != std::string::npos){
-                if(linea[i+2] == '|'){
-                    litrosVendidos += linea[i+1];
-                    litrosVendidosPremium += stoi(litrosVendidos);
-                }else{
-                    litrosVendidos = linea[i+1]+linea[i+2];
-                    litrosVendidosPremium += stoi(litrosVendidos);
-                }
-            }else if(contadorCaracterDeterminante == 1 && linea.find(EcoExtra) != std::string::npos){
-                if(linea[i+2] == '|'){
-                    litrosVendidos += linea[i+1];
-                    litrosVendidosEcoExtra += stoi(litrosVendidos);
-                }else{
-                    litrosVendidos = linea[i+1]+linea[i+2];
-                    litrosVendidosEcoExtra += stoi(litrosVendidos);
-                }
-            }
-        }
-       
-    }
-    
-    std::cout<<"Litros vendidos de combustible Regular: "<<litrosVendidosRegular<<endl;
-    std::cout<<"Litros vendidos de combustible Premium: "<<litrosVendidosPremium<<endl;
-    std::cout<<"Litros vendidos de combustible EcoExtra: "<<litrosVendidosEcoExtra<<endl;
-    
-    
-    file.close();
-    //std::cout<<"Informacion de estaciones recopilada satisfactoriamente..."<<endl<<endl;
-    
-}    
+}  
